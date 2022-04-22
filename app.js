@@ -1,20 +1,24 @@
 const   express     = require('express'),
         app         = express(),
         bodyParser  = require("body-parser"),
-        mongoose    = require('mongoose');
+        mongoose    = require('mongoose'),
+        Print       = require('./models/print'),
+        Comment     = require('./models/comment'),
+        seedDB      = require('./seeds.js');
 
 mongoose.connect('mongodb://localhost/NamDoSanPrint');
 app.set("view engine", "ejs");
 app.use(express.static("./public"));
 app.use(bodyParser.urlencoded({extend: true}));
+// seedDB();
 
-const printSchema = new mongoose.Schema({
-    name: String,
-    Artist: String,
-    url: String
-});
+// const printSchema = new mongoose.Schema({
+//     name: String,
+//     Artist: String,
+//     url: String
+// });
 
-const Print = mongoose.model('Print', printSchema);
+// const Print = mongoose.model('Print', printSchema);
 
 // const prints = [
 //     {name:"Iron man 3", Artist:"Phantom City Creative", url:"https://img.kapook.com/u/itsada/movie/1sheet%20SF_re_2.jpg"},
@@ -22,21 +26,21 @@ const Print = mongoose.model('Print', printSchema);
 //     {name:"Iron man", Artist:"Gabz", url:"https://upload.wikimedia.org/wikipedia/th/2/20/Ironmanposter.jpg"}
 // ];
 
-Print.create(
-    {
-        name:"Iron man 3", 
-        Artist:"Phantom City Creative", 
-        url:"https://img.kapook.com/u/itsada/movie/1sheet%20SF_re_2.jpg"
-    },
-    function(err, print){
-        if(err) {
-            console.log(err);
-        } else {
-            console.log("New data added!");
-            console.log(print);
-        }
-    }
-)
+// Print.create(
+//     {
+//         name:"Iron man 3", 
+//         Artist:"Phantom City Creative", 
+//         url:"https://img.kapook.com/u/itsada/movie/1sheet%20SF_re_2.jpg"
+//     },
+//     function(err, print){
+//         if(err) {
+//             console.log(err);
+//         } else {
+//             console.log("New data added!");
+//             console.log(print);
+//         }
+//     }
+// )
 
 app.get("/", function(req, res) {
     res.render("landing.ejs");
@@ -74,7 +78,8 @@ app.get("/prints/new", (req, res) => {
 });
 
 app.get("/prints/:id", (req, res) => {
-    Print.findById(req.params.id, (err, foundPrint) => {
+    Print.findById(req.params.id).populate('comments').exec(function(err, foundPrint) {
+    // Print.findById(req.params.id, (err, foundPrint) => {
         if(err) {
             console.log(err);
         } else {
