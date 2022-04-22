@@ -52,7 +52,7 @@ app.get("/prints", function(req, res) {
         if(err) {
             console.log(err);
         } else {
-            res.render("index.ejs", {prints: allPrints})
+            res.render("print/index.ejs", {prints: allPrints})
         }
     })
 });
@@ -74,7 +74,7 @@ app.post("/prints", (req, res) => {
 })
 
 app.get("/prints/new", (req, res) => {
-    res.render("new.ejs");
+    res.render("print/new.ejs");
 });
 
 app.get("/prints/:id", (req, res) => {
@@ -83,7 +83,35 @@ app.get("/prints/:id", (req, res) => {
         if(err) {
             console.log(err);
         } else {
-            res.render("show.ejs", {print: foundPrint});
+            res.render("print/show.ejs", {print: foundPrint});
+        }
+    });
+})
+
+app.get("/prints/:id/comments/new", (req, res) => {
+    Print.findById(req.params.id, (err, foundPrint) => {
+        if(err) {
+            console.log(err)
+        } else {
+            res.render("comments/new.ejs", {print: foundPrint})
+        }
+    })
+})
+
+app.post("/prints/:id/comments", (req, res) => {
+    Print.findById(req.params.id, (err, foundPrint) => {
+        if(err) {
+            console.log(err)
+        } else {
+            Comment.create(req.body.comment, (err, comment) => {
+                if(err) {
+                    console.log(err)
+                } else {
+                    foundPrint.comments.push(comment);
+                    foundPrint.save();
+                    res.redirect("/prints/" + foundPrint._id);
+                }
+            });
         }
     });
 })
