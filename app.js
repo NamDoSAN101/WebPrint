@@ -2,15 +2,39 @@ const   express     = require('express'),
         app         = express(),
         bodyParser  = require("body-parser"),
         mongoose    = require('mongoose'),
+        passport    = require('passport'),
+        LocalStrategy = require('passport-local'),
         Print       = require('./models/print'),
         Comment     = require('./models/comment'),
+        User        = require('./models/user'),
         seedDB      = require('./seeds.js');
+
+const   indexRoutes = require("./routes/index"),
+        printRoutes = require("./routes/prints"),
+        commentRoutes = require("./routes/comments");
 
 mongoose.connect('mongodb://localhost/NamDoSanPrint');
 app.set("view engine", "ejs");
 app.use(express.static("./public"));
 app.use(bodyParser.urlencoded({extend: true}));
 // seedDB();
+
+app.use(require('express-session') ({
+    secret: 'secret word',
+    releaseEvents: false,
+    saveUninitialized: false
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+app.use((req, res, next) => {
+    res.locals.currentUser = req.user;
+    next();
+});
 
 // const printSchema = new mongoose.Schema({
 //     name: String,
@@ -42,79 +66,9 @@ app.use(bodyParser.urlencoded({extend: true}));
 //     }
 // )
 
-app.get("/", function(req, res) {
-    res.render("landing.ejs");
-});
-
-app.get("/prints", function(req, res) {
-    // res.render("index.ejs", {prints:prints})
-    Print.find({}, function(err, allPrints){
-        if(err) {
-            console.log(err);
-        } else {
-            res.render("print/index.ejs", {prints: allPrints})
-        }
-    })
-});
-
-app.post("/prints", (req, res) => {
-    let name = req.body.name;
-    let Artist = req.body.Artist;
-    let url = req.body.url;
-    let newPrint = {name:name, Artist:Artist, url:url};
-    // prints.push(newPrint);
-    Print.create(newPrint, function(err, newlyAdded) {
-        if(err) {
-            console.log(err);
-        } else {
-            res.redirect("/prints");
-        }
-    })
-    // res.redirect("/prints");
-})
-
-app.get("/prints/new", (req, res) => {
-    res.render("print/new.ejs");
-});
-
-app.get("/prints/:id", (req, res) => {
-    Print.findById(req.params.id).populate('comments').exec(function(err, foundPrint) {
-    // Print.findById(req.params.id, (err, foundPrint) => {
-        if(err) {
-            console.log(err);
-        } else {
-            res.render("print/show.ejs", {print: foundPrint});
-        }
-    });
-})
-
-app.get("/prints/:id/comments/new", (req, res) => {
-    Print.findById(req.params.id, (err, foundPrint) => {
-        if(err) {
-            console.log(err)
-        } else {
-            res.render("comments/new.ejs", {print: foundPrint})
-        }
-    })
-})
-
-app.post("/prints/:id/comments", (req, res) => {
-    Print.findById(req.params.id, (err, foundPrint) => {
-        if(err) {
-            console.log(err)
-        } else {
-            Comment.create(req.body.comment, (err, comment) => {
-                if(err) {
-                    console.log(err)
-                } else {
-                    foundPrint.comments.push(comment);
-                    foundPrint.save();
-                    res.redirect("/prints/" + foundPrint._id);
-                }
-            });
-        }
-    });
-})
+app.use('/', indexRoutes);
+app.use('/prints', printRoutes);
+app.use('/prints/:id/comments', commentRoutes);
 
 app.listen(3000, () => {
     console.log("Activated");
