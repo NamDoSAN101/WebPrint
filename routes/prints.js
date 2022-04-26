@@ -1,6 +1,24 @@
 const   express = require('express'),
         router  = express.Router(),
-        Print    = require('../models/print');
+        multer  = require('multer'),
+        path    = require('path'),
+        storage = multer.diskStorage({
+            destination: function(req, file, callback) {
+                callback(null, './public/upload/');
+            },
+            filename: function(req, file, callback) {
+                callback(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+            }
+        }),
+        imageFilter = function(req, file, callback) {
+            if(!file.originalname.match(/\.(jpg|jpeg|png|gif)$/i)) {
+                return callback(new Error('Only jpg, jpeg, png and gif'), false);
+            }
+            callback(null, true);
+        },
+        upload  = multer({storage: storage, fileFilter: imageFilter}),
+        middleware = require('../middleware'),
+        Print   = require('../models/print');
 
 router.get("/", function(req, res) {
     // res.render("index.ejs", {prints:prints})
@@ -13,23 +31,33 @@ router.get("/", function(req, res) {
     })
 });
 
-router.post("/", (req, res) => {
-    let name = req.body.name;
-    let Artist = req.body.Artist;
-    let url = req.body.url;
-    let newPrint = {name:name, Artist:Artist, url:url};
+router.post("/", middleware.isLoggedIn, upload.single('image'), (req, res) => {
+    req.body.print.image = '/upload/' + req.file.filename;
+    req.body.print.author = {
+        id: req.user._id,
+        username: req.user.username
+    };
+    // let name = req.body.name;
+    // let Artist = req.body.Artist;
+    // let url = req.body.url;
+    // let author = {
+    //     id: req.user._id,
+    //     username: req.user.username
+    // }
+    // let newPrint = {name:name, Artist:Artist, url:url, author: author};
     // prints.push(newPrint);
-    Print.create(newPrint, function(err, newlyAdded) {
+    // Print.create(newPrint, function(err, newlyAdded) {
+    Print.create(req.body.print, function(err, newlyAdded) {
         if(err) {
             console.log(err);
         } else {
             res.redirect("/prints");
         }
-    })
+    });
     // res.redirect("/prints");
-})
+});
 
-router.get("/new", (req, res) => {
+router.get("/new", middleware.isLoggedIn, (req, res) => {
     res.render("print/new.ejs");
 });
 

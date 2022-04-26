@@ -4,6 +4,7 @@ const   express     = require('express'),
         mongoose    = require('mongoose'),
         passport    = require('passport'),
         LocalStrategy = require('passport-local'),
+        flash       = require('connect-flash'),
         Print       = require('./models/print'),
         Comment     = require('./models/comment'),
         User        = require('./models/user'),
@@ -17,6 +18,7 @@ mongoose.connect('mongodb://localhost/NamDoSanPrint');
 app.set("view engine", "ejs");
 app.use(express.static("./public"));
 app.use(bodyParser.urlencoded({extend: true}));
+app.use(flash());
 // seedDB();
 
 app.use(require('express-session') ({
@@ -33,6 +35,8 @@ passport.deserializeUser(User.deserializeUser());
 
 app.use((req, res, next) => {
     res.locals.currentUser = req.user;
+    res.locals.error = req.flash('error');
+    res.locals.success = req.flash('success');
     next();
 });
 

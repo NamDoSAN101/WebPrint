@@ -23,6 +23,9 @@ router.post("/", middleware.isLoggedIn, (req, res) => {
                 if(err) {
                     console.log(err)
                 } else {
+                    comment.author.id = req.user._id;
+                    comment.author.username = req.user.username;
+                    comment.save();
                     foundPrint.comments.push(comment);
                     foundPrint.save();
                     res.redirect("/prints/" + foundPrint._id);

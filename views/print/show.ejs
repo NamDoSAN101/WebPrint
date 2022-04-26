@@ -1,12 +1,13 @@
 <%- include("../partials/header.ejs") %>
 
 <h1> <%= print.name %> </h1> 
-<img src="<%= print.url %>" >
+<img src="<%= print.image %>" >
 <p> Artist: <%= print.Artist %> </p>
+<p>Submitted by <%= print.author.username %> </p>
 <h2> Comments: </h2>
 <% print.comments.forEach(function(comment){ %>
     <p>
-        <strong><%= comment.author %></strong> - <%= comment.text %>
+        <strong><%= comment.author.username %></strong> - <%= comment.text %>
     </p>
 <% }) %>
 <!-- button -->

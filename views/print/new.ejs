@@ -2,18 +2,18 @@
 
 <div class="container">
 <h1>Add your new print</h1>
-<form action="/prints" method="POST">
+<form action="/prints" method="POST" enctype="multipart/form-data">
 <div class="mb-3">
     <label class="form-label">Title</label>
-    <input type="text" class="form-control" name="name" placeholder="Print title">
+    <input type="text" class="form-control" name="print[name]" placeholder="Print title">
 </div>
 <div class="mb-3">
     <label  class="form-label">Artist</label>
-    <input type="text" class="form-control" name="Artist" placeholder="Artist name">
+    <input type="text" class="form-control" name="print[Artist]" placeholder="Artist name">
 </div>
 <div class="mb-3">
-    <label  class="form-label">URL</label>
-    <input type="text" class="form-control" name="url" placeholder="Image URL">
+    <label  class="form-label">Image</label>
+    <input type="file" class="form-control" name="image" accept="image/*">
 </div>
 <button type="submit" class="btn btn-primary">Submit</button>
 <a href="/prints">Go back</a>
