@@ -5,6 +5,7 @@ const   express     = require('express'),
         passport    = require('passport'),
         LocalStrategy = require('passport-local'),
         flash       = require('connect-flash'),
+        methodOverride = require('method-override'),
         Print       = require('./models/print'),
         Comment     = require('./models/comment'),
         User        = require('./models/user'),
@@ -18,6 +19,7 @@ mongoose.connect('mongodb://localhost/NamDoSanPrint');
 app.set("view engine", "ejs");
 app.use(express.static("./public"));
 app.use(bodyParser.urlencoded({extend: true}));
+app.use(methodOverride('_method'));
 app.use(flash());
 // seedDB();
 

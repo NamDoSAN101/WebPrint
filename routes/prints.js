@@ -70,6 +70,41 @@ router.get("/:id", (req, res) => {
             res.render("print/show.ejs", {print: foundPrint});
         }
     });
+});
+
+router.get('/:id/edit', middleware.checkPrintOwner, (req, res) => {
+    Print.findById(req.params.id, (err, foundprint) => {
+        if(err) {
+            console.log(err)
+        } else {
+            res.render('print/edit.ejs', {print: foundprint})
+        }
+    })
+})
+
+router.put('/:id', upload.single('image'), (req,res) => {
+    if(req.file) {
+        req.body.print.image = '/upload/' + req.file.filename;
+    }
+    Print.findByIdAndUpdate(req.params.id, req.body.print, (err, updatedPrint) => {
+        if(err) {
+            console.log(err)
+            res.redirect('/prints/');
+        } else {
+            res.redirect('/prints/' + req.params.id);
+        }
+    })
+})
+
+router.delete('/:id', middleware.checkPrintOwner, (req, res) => {
+    Print.findByIdAndRemove(req.params.id, (err) => {
+        if(err) {
+            console.log(err);
+            res.redirect('/prints/');
+        } else {
+            res.redirect('/prints/')
+        }
+    })
 })
 
 module.exports = router;
