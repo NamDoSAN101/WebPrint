@@ -2,7 +2,7 @@
 
 <div class="container">
 <h1>Registor</h1>
-<form action="/register" method="POST">
+<form action="/register" method="POST" enctype="multipart/form-data">
 <div class="mb-3">
     <label class="form-label">Username</label>
     <input type="text" class="form-control" name="username" placeholder="Your username">
@@ -11,6 +11,26 @@
     <label  class="form-label">Password</label>
     <input type="password" class="form-control" name="password" placeholder="Your Password">
 </div>
+<div class="mb-3">
+    <label  class="form-label">First Name</label>
+    <input type="text" class="form-control" name="firstName" placeholder="Your first name">
+</div>
+<div class="mb-3">
+    <label  class="form-label">Last Name</label>
+    <input type="text" class="form-control" name="lastName" placeholder="Your last name">
+</div>
+<div class="mb-3">
+    <label  class="form-label">E-mail</label>
+    <input type="email" class="form-control" name="email" placeholder="Your e-mail address">
+</div>
+<div class="mb-3">
+    <label  class="form-label">Profile image</label>
+    <input type="file" class="form-control" name="profileImage" accept="image/*">
+</div>
+<!-- <div class="mb-3">
+    <label  class="form-label">Admin code</label>
+    <input type="text" class="form-control" name="adminCode" placeholder="Type admin code here">
+</div> -->
 
 <button type="submit" class="btn btn-primary">Registor</button>
 <a href="/">Go back</a>

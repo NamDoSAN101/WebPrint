@@ -32,7 +32,7 @@
               </li>
               <% } else { %>
               <li class="nav-item">
-                <a class="nav-link" href="#">Logged as <%= currentUser.username %></a>
+                <a class="nav-link" href="/user/<%= currentUser._id %> ">Logged as <%= currentUser.username %></a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="/logout">Logout</a>

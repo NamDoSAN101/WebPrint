@@ -1,5 +1,6 @@
 const   mongoose    = require('mongoose'),
         Print       = require('./models/print'),
+        User        = require('./models/user'),
         Comment     = require('./models/comment');
 
 // const data = [

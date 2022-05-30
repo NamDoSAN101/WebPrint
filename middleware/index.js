@@ -9,7 +9,7 @@ middlewareObj.checkPrintOwner = function(req, res, next) {
             if(err) {
                 res.redirect('back');
             } else {
-                if(foundPrint.author.id.equals(req.user._id)) {
+                if(foundPrint.author.id.equals(req.user._id) || req.user.isAdmin) {
                     next();
                 } else {
                     req.flash('error', "You do not have permission to do this action");
@@ -29,7 +29,7 @@ middlewareObj.checkCommentOwner = function(req, res, next) {
             if(err) {
                 res.redirect('back');
             } else {
-                if(foundComment.author.id.equals(req.user._id)) {
+                if(foundComment.author.id.equals(req.user._id) || req.user.isAdmin) {
                     next();
                 } else {
                     req.flash('error', "You do not have permission to do this action");
